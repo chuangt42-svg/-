@@ -73,7 +73,7 @@
    - docker-compose up --build
 3. 服务访问：
    - 后端 API: http://localhost:4000
-   - 前端: http://localhost:3000
+   - 前端: http://localhost:4000
 
 本地开发（不使用 Docker）
 1. 后端：
