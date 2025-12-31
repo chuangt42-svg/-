@@ -13,7 +13,7 @@ import {
   pricingInfo
 } from "./store.js";
 
-const port = Number(process.env.PORT || 4000);
+const port = Number(process.env.PORT || 4100);
 
 function withCorsHeaders(headers = {}) {
   return {
