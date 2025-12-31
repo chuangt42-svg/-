@@ -3,6 +3,7 @@ const API_BASE = "http://localhost:4000/api";
 const orderForm = document.getElementById("order-form");
 const ordersContainer = document.getElementById("orders");
 
+
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, {
     headers: { "Content-Type": "application/json" },
@@ -15,24 +16,21 @@ async function fetchJson(url, options = {}) {
   return response.json();
 }
 
-function renderOrders(orders) {
+
   ordersContainer.innerHTML = "";
   if (!orders.length) {
     ordersContainer.innerHTML = "<p class=\"muted\">暂无订单。</p>";
     return;
   }
   orders.forEach((order) => {
+
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
       <h3>${order.title}</h3>
       <p class="muted">主题：${order.topic}</p>
       <p>金额：¥${order.amount}（${order.pages}页，${order.urgency}）</p>
-      <p class="status">状态：${order.status}</p>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
-        <button data-action="pay" data-id="${order.id}">创建支付</button>
-        <button class="secondary" data-action="submit" data-id="${order.id}">提交稿件</button>
-        <button class="secondary" data-action="complete" data-id="${order.id}">完成订单</button>
+
       </div>
     `;
     ordersContainer.appendChild(card);
@@ -40,8 +38,7 @@ function renderOrders(orders) {
 }
 
 async function loadOrders() {
-  const orders = await fetchJson(`${API_BASE}/orders`);
-  renderOrders(orders);
+
 }
 
 orderForm.addEventListener("submit", async (event) => {
@@ -84,3 +81,4 @@ ordersContainer.addEventListener("click", async (event) => {
 });
 
 loadOrders();
+

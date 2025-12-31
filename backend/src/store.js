@@ -1,4 +1,4 @@
-import { nanoid } from "nanoid";
+
 
 const orders = new Map();
 const payments = new Map();
@@ -14,6 +14,7 @@ const pricingRules = {
   }
 };
 
+
 export function listOrders() {
   return Array.from(orders.values());
 }
@@ -28,7 +29,7 @@ export function createOrder(payload) {
   const multiplier = pricingRules.urgencyMultiplier[urgency] ?? 1;
   const amount = Math.round(pages * pricingRules.basePricePerPage * multiplier);
   const order = {
-    id: nanoid(),
+
     title: payload.title,
     topic: payload.topic,
     pages,
@@ -61,7 +62,7 @@ export function createPayment({ orderId, provider }) {
   const order = orders.get(orderId);
   if (!order) return null;
   const payment = {
-    id: nanoid(),
+
     orderId,
     provider,
     amount: order.amount,
@@ -93,6 +94,7 @@ export function updatePayment(id, updates) {
 export function listPayments() {
   return Array.from(payments.values());
 }
+
 
 export function recordPaymentSuccess(paymentId) {
   const payment = payments.get(paymentId);
