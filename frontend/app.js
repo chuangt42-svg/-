@@ -16,10 +16,12 @@ const orderPreviewPrice = document.getElementById("order-preview-price");
 const orderPreviewDetails = document.getElementById("order-preview-details");
 const urgencyOptions = document.getElementById("urgency-options");
 const orderSearch = document.getElementById("order-search");
+const orderFilters = document.getElementById("order-filters");
 
 let pricingRules = null;
 let cachedOrders = [];
 let cachedPayments = {};
+let statusFilter = "";
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, {
@@ -195,11 +197,12 @@ function renderOrders(orders, payments) {
 
 function applySearch(orders) {
   const query = orderSearch.value.trim();
-  if (!query) return orders;
-  return orders.filter(
-    (order) =>
-      order.title.includes(query) || order.topic.includes(query)
-  );
+  return orders.filter((order) => {
+    const matchesQuery =
+      !query || order.title.includes(query) || order.topic.includes(query);
+    const matchesStatus = !statusFilter || order.status === statusFilter;
+    return matchesQuery && matchesStatus;
+  });
 }
 
 async function loadOrders() {
@@ -293,6 +296,15 @@ urgencyOptions.addEventListener("click", (event) => {
   syncUrgencyUI(chip.dataset.value);
 });
 orderSearch.addEventListener("input", () => {
+  renderOrders(applySearch(cachedOrders), cachedPayments);
+});
+orderFilters.addEventListener("click", (event) => {
+  const chip = event.target.closest(".filter-chip");
+  if (!chip) return;
+  statusFilter = chip.dataset.status || "";
+  document.querySelectorAll(".filter-chip").forEach((item) => {
+    item.classList.toggle("active", item === chip);
+  });
   renderOrders(applySearch(cachedOrders), cachedPayments);
 });
 
