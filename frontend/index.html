@@ -59,6 +59,63 @@
         color: #475569;
         font-size: 14px;
       }
+      .form-section {
+        display: grid;
+        gap: 16px;
+      }
+      .field-group {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 14px;
+        border: 1px solid #e2e8f0;
+        display: grid;
+        gap: 12px;
+      }
+      .field-group h4 {
+        margin: 0;
+        font-size: 14px;
+        color: #475569;
+      }
+      .inline-help {
+        font-size: 12px;
+        color: #64748b;
+      }
+      .urgency-options {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+      .urgency-chip {
+        border: 1px solid #cbd5f5;
+        border-radius: 10px;
+        padding: 10px 12px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        background: white;
+      }
+      .urgency-chip.active {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+      }
+      .urgency-chip span {
+        font-size: 12px;
+        color: #64748b;
+      }
+      .primary-action {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .primary-action button {
+        flex: 1;
+      }
+      .estimate-note {
+        font-size: 12px;
+        color: #64748b;
+      }
       .hero {
         display: flex;
         justify-content: space-between;
@@ -323,44 +380,75 @@
         <h2>创建订单</h2>
         <div class="order-layout">
           <form id="order-form">
-            <div class="grid">
-              <div>
-                <label for="title">订单标题</label>
-                <input id="title" name="title" placeholder="毕业论文写作" required />
+            <div class="form-section">
+              <div class="field-group">
+                <h4>订单基本信息</h4>
+                <div class="grid">
+                  <div>
+                    <label for="title">订单标题</label>
+                    <input id="title" name="title" placeholder="毕业论文写作" required />
+                    <span class="inline-help">例如：市场营销毕业论文</span>
+                  </div>
+                  <div>
+                    <label for="topic">论文主题</label>
+                    <input id="topic" name="topic" placeholder="AI 在教育中的应用" required />
+                    <span class="inline-help">用于匹配写作方向</span>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label for="topic">论文主题</label>
-                <input id="topic" name="topic" placeholder="AI 在教育中的应用" required />
-              </div>
-              <div>
-                <label for="pages">页数</label>
-                <input id="pages" name="pages" type="number" min="1" value="10" required />
-              </div>
-              <div>
-                <label for="urgency">紧急程度</label>
-                <select id="urgency" name="urgency">
+              <div class="field-group">
+                <h4>页数与紧急程度</h4>
+                <div class="grid">
+                  <div>
+                    <label for="pages">页数</label>
+                    <input id="pages" name="pages" type="number" min="1" value="10" required />
+                    <span class="inline-help">支持 1-100 页</span>
+                  </div>
+                </div>
+                <div class="urgency-options" id="urgency-options">
+                  <button type="button" class="urgency-chip active" data-value="normal">
+                    正常
+                    <span>标准交付</span>
+                  </button>
+                  <button type="button" class="urgency-chip" data-value="urgent">
+                    加急
+                    <span>加快处理</span>
+                  </button>
+                  <button type="button" class="urgency-chip" data-value="express">
+                    极速
+                    <span>最快完成</span>
+                  </button>
+                </div>
+                <select id="urgency" name="urgency" style="display:none;">
                   <option value="normal">正常</option>
                   <option value="urgent">加急</option>
                   <option value="express">极速</option>
                 </select>
               </div>
-            </div>
-            <div>
-              <label for="requirements">需求说明</label>
-              <textarea id="requirements" name="requirements" placeholder="引用格式、查重率要求等"></textarea>
-            </div>
-            <div class="inline-row">
-              <div>
-                <label for="provider">支付方式</label>
-                <select id="provider" name="provider">
-                  <option value="mock">模拟支付</option>
-                  <option value="stripe">Stripe</option>
-                  <option value="alipay">支付宝</option>
-                  <option value="wechat">微信支付</option>
-                </select>
+              <div class="field-group">
+                <h4>需求说明</h4>
+                <label for="requirements">补充说明</label>
+                <textarea id="requirements" name="requirements" placeholder="引用格式、查重率要求等"></textarea>
+              </div>
+              <div class="field-group">
+                <h4>支付方式</h4>
+                <div class="inline-row">
+                  <div>
+                    <label for="provider">支付方式</label>
+                    <select id="provider" name="provider">
+                      <option value="mock">模拟支付</option>
+                      <option value="stripe">Stripe</option>
+                      <option value="alipay">支付宝</option>
+                      <option value="wechat">微信支付</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="primary-action">
+                <span class="estimate-note">提交后可在订单列表查看进度。</span>
+                <button type="submit">提交订单</button>
               </div>
             </div>
-            <button type="submit">提交订单</button>
           </form>
           <div class="order-preview" id="order-preview">
             <h3>价格预估</h3>

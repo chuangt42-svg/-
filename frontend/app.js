@@ -14,6 +14,7 @@ const supportSend = document.getElementById("support-send");
 const supportClear = document.getElementById("support-clear");
 const orderPreviewPrice = document.getElementById("order-preview-price");
 const orderPreviewDetails = document.getElementById("order-preview-details");
+const urgencyOptions = document.getElementById("urgency-options");
 
 let pricingRules = null;
 
@@ -107,6 +108,14 @@ function updateOrderPreview() {
     <li>紧急系数：${multiplier}</li>
     <li>基础单价：${pricingRules ? formatCurrency(pricingRules.basePricePerPage) : "—"}</li>
   `;
+}
+
+function syncUrgencyUI(value) {
+  document.getElementById("urgency").value = value;
+  document.querySelectorAll(".urgency-chip").forEach((chip) => {
+    chip.classList.toggle("active", chip.dataset.value === value);
+  });
+  updateOrderPreview();
 }
 
 function renderSummary(orders, paymentsByOrder) {
@@ -220,6 +229,7 @@ orderForm.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload)
     });
     orderForm.reset();
+    syncUrgencyUI("normal");
     updateOrderPreview();
     await loadOrders();
   } catch (error) {
@@ -262,6 +272,11 @@ ordersContainer.addEventListener("click", async (event) => {
 loadOrders();
 loadPricing();
 orderForm.addEventListener("input", updateOrderPreview);
+urgencyOptions.addEventListener("click", (event) => {
+  const chip = event.target.closest(".urgency-chip");
+  if (!chip) return;
+  syncUrgencyUI(chip.dataset.value);
+});
 
 supportToggle.addEventListener("click", () => {
   supportPanel.classList.toggle("open");
