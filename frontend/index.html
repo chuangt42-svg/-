@@ -11,6 +11,69 @@
         background: #f6f7fb;
         color: #1f2937;
       }
+      .app-shell {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .sidebar {
+        width: 240px;
+        background: #111827;
+        color: #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        padding: 28px 20px;
+        box-sizing: border-box;
+      }
+      .sidebar .brand {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 28px;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 12px;
+      }
+      .sidebar li {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-weight: 600;
+      }
+      .main-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 32px;
+        background: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .topbar .left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-weight: 600;
+      }
+      .topbar .menu {
+        font-size: 20px;
+      }
+      .topbar .user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #4b5563;
+        font-weight: 600;
+      }
       header {
         background: linear-gradient(120deg, #4f46e5, #6366f1);
         color: white;
@@ -20,8 +83,8 @@
         padding: 24px 40px 60px;
         display: grid;
         gap: 24px;
-        max-width: 1100px;
-        margin: 0 auto;
+        overflow-y: auto;
+        flex: 1;
       }
       section {
         background: white;
@@ -81,50 +144,74 @@
     </style>
   </head>
   <body>
-    <header>
-      <h1>论文订单系统 + 支付系统</h1>
-      <p>快速创建论文订单、生成支付、模拟支付回调。</p>
-    </header>
-    <main>
-      <section>
-
-        <h2>创建订单</h2>
-        <form id="order-form">
-          <div class="grid">
-            <div>
-              <label for="title">订单标题</label>
-              <input id="title" name="title" placeholder="毕业论文写作" required />
-            </div>
-            <div>
-              <label for="topic">论文主题</label>
-              <input id="topic" name="topic" placeholder="AI 在教育中的应用" required />
-            </div>
-            <div>
-              <label for="pages">页数</label>
-              <input id="pages" name="pages" type="number" min="1" value="10" required />
-            </div>
-            <div>
-              <label for="urgency">紧急程度</label>
-              <select id="urgency" name="urgency">
-                <option value="normal">正常</option>
-                <option value="urgent">加急</option>
-                <option value="express">极速</option>
-              </select>
-            </div>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">校园学研平台</div>
+        <ul>
+          <li>首页</li>
+          <li>网课学习</li>
+          <li>校园跑步</li>
+          <li>论文订单</li>
+          <li>成绩查询</li>
+          <li>个人中心</li>
+        </ul>
+      </aside>
+      <div class="main-panel">
+        <div class="topbar">
+          <div class="left">
+            <span class="menu">☰</span>
+            <span>论文订单 / 当前页</span>
           </div>
-          <div>
-            <label for="requirements">需求说明</label>
-            <textarea id="requirements" name="requirements" placeholder="引用格式、查重率要求等"></textarea>
+          <div class="user">
+            <span>李同学</span>
+            <span>2024 秋季</span>
           </div>
-          <button type="submit">提交订单</button>
-        </form>
-      </section>
+        </div>
+        <header>
+          <h1>论文订单系统 + 支付系统</h1>
+          <p>快速创建论文订单、生成支付、模拟支付回调。</p>
+        </header>
+        <main>
+          <section>
+            <h2>创建订单</h2>
+            <form id="order-form">
+              <div class="grid">
+                <div>
+                  <label for="title">订单标题</label>
+                  <input id="title" name="title" placeholder="毕业论文写作" required />
+                </div>
+                <div>
+                  <label for="topic">论文主题</label>
+                  <input id="topic" name="topic" placeholder="AI 在教育中的应用" required />
+                </div>
+                <div>
+                  <label for="pages">页数</label>
+                  <input id="pages" name="pages" type="number" min="1" value="10" required />
+                </div>
+                <div>
+                  <label for="urgency">紧急程度</label>
+                  <select id="urgency" name="urgency">
+                    <option value="normal">正常</option>
+                    <option value="urgent">加急</option>
+                    <option value="express">极速</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="requirements">需求说明</label>
+                <textarea id="requirements" name="requirements" placeholder="引用格式、查重率要求等"></textarea>
+              </div>
+              <button type="submit">提交订单</button>
+            </form>
+          </section>
 
-      <section>
-        <h2>订单列表</h2>
-        <div id="orders" class="grid"></div>
-      </section>
-    </main>
+          <section>
+            <h2>订单列表</h2>
+            <div id="orders" class="grid"></div>
+          </section>
+        </main>
+      </div>
+    </div>
 
     <script src="./app.js"></script>
   </body>
