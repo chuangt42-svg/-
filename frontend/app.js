@@ -54,13 +54,21 @@ function formatStatus(status) {
   return statusLabels[status] || status;
 }
 
+function formatCurrency(amount) {
+  return new Intl.NumberFormat("zh-CN", {
+    style: "currency",
+    currency: "CNY",
+    maximumFractionDigits: 0
+  }).format(amount);
+}
+
 function renderPricing(pricing) {
   if (!pricing) return;
   const { rules } = pricing;
   pricingContainer.innerHTML = `
     <div class="card">
       <h3>基础价格</h3>
-      <p>每页 ¥${rules.basePricePerPage}</p>
+      <p>每页 ${formatCurrency(rules.basePricePerPage)}</p>
     </div>
     <div class="card">
       <h3>紧急系数</h3>
@@ -87,7 +95,7 @@ function renderSummary(orders, paymentsByOrder) {
     </div>
     <div class="summary-card">
       <h3>累计金额</h3>
-      <p>¥${totalRevenue}</p>
+      <p>${formatCurrency(totalRevenue)}</p>
     </div>
     <div class="summary-card">
       <h3>待支付</h3>
@@ -122,7 +130,7 @@ function renderOrders(orders, payments) {
       <h3>${order.title}</h3>
       <div class="order-meta">
         <span>主题：${order.topic}</span>
-        <span>金额：¥${order.amount}（${order.pages}页，${order.urgency}）</span>
+        <span>金额：${formatCurrency(order.amount)}（${order.pages}页，${order.urgency}）</span>
         <span>创建时间：${new Date(order.createdAt).toLocaleString()}</span>
       </div>
       <div class="inline-row">
