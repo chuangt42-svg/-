@@ -58,6 +58,10 @@
         background: #e0e7ff;
         color: #3730a3;
       }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
       .grid {
         display: grid;
         gap: 16px;
@@ -85,6 +89,10 @@
       <p>快速创建论文订单、生成支付、模拟支付回调。</p>
     </header>
     <main>
+      <section>
+        <h2>价格规则</h2>
+        <div id="pricing" class="grid"></div>
+      </section>
       <section>
         <h2>创建订单</h2>
         <form id="order-form">

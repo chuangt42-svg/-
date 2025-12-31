@@ -96,6 +96,12 @@ export function listPayments() {
   return Array.from(payments.values());
 }
 
+export function listPaymentsForOrder(orderId) {
+  return Array.from(payments.values()).filter(
+    (payment) => payment.orderId === orderId
+  );
+}
+
 export function recordPaymentSuccess(paymentId) {
   const payment = payments.get(paymentId);
   if (!payment) return null;

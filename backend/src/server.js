@@ -8,6 +8,7 @@ import {
   createPayment,
   getPayment,
   listPayments,
+  listPaymentsForOrder,
   recordPaymentSuccess,
   pricingInfo
 } from "./store.js";
@@ -53,11 +54,34 @@ function readJsonBody(req) {
   });
 }
 
+function isValidOrderStatus(status) {
+  return [
+    "pending_payment",
+    "paid",
+    "submitted",
+    "completed",
+    "refunded"
+  ].includes(status);
+}
+
+function canTransition(currentStatus, nextStatus) {
+  const transitions = {
+    pending_payment: ["paid"],
+    paid: ["submitted", "refunded"],
+    submitted: ["completed", "refunded"],
+    completed: [],
+    refunded: []
+  };
+
+  return transitions[currentStatus]?.includes(nextStatus);
+}
+
 function matchRoute(method, pathname) {
   const routes = [
     { method: "GET", path: /^\/api\/health$/ },
     { method: "GET", path: /^\/api\/pricing$/ },
     { method: "GET", path: /^\/api\/orders$/ },
+    { method: "GET", path: /^\/api\/orders\/(.+)\/payments$/ },
     { method: "GET", path: /^\/api\/orders\/(.+)$/ },
     { method: "POST", path: /^\/api\/orders$/ },
     { method: "PATCH", path: /^\/api\/orders\/(.+)$/ },
@@ -117,7 +141,22 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    if (req.method === "GET" && param && url.pathname.startsWith("/api/orders/")) {
+    if (req.method === "GET" && param && url.pathname.endsWith("/payments")) {
+      const order = getOrder(param);
+      if (!order) {
+        sendJson(res, 404, { message: "Order not found" });
+        return;
+      }
+      sendJson(res, 200, listPaymentsForOrder(param));
+      return;
+    }
+
+    if (
+      req.method === "GET" &&
+      param &&
+      url.pathname.startsWith("/api/orders/") &&
+      !url.pathname.endsWith("/payments")
+    ) {
       const order = getOrder(param);
       if (!order) {
         sendJson(res, 404, { message: "Order not found" });
@@ -130,8 +169,13 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "POST" && url.pathname === "/api/orders") {
       const body = await readJsonBody(req);
       const { title, topic, pages } = body;
-      if (!title || !topic || !pages) {
+      const numericPages = Number(pages);
+      if (!title || !topic || !numericPages || Number.isNaN(numericPages)) {
         sendJson(res, 400, { message: "title, topic, pages are required" });
+        return;
+      }
+      if (numericPages < 1) {
+        sendJson(res, 400, { message: "pages must be greater than 0" });
         return;
       }
       const order = createOrder(body);
@@ -141,23 +185,39 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "PATCH" && param && url.pathname.startsWith("/api/orders/")) {
       const body = await readJsonBody(req);
-      const order = updateOrder(param, body);
-      if (!order) {
+      const current = getOrder(param);
+      if (!current) {
         sendJson(res, 404, { message: "Order not found" });
         return;
       }
+      if (body.status) {
+        if (!isValidOrderStatus(body.status)) {
+          sendJson(res, 400, { message: "Invalid status value" });
+          return;
+        }
+        if (!canTransition(current.status, body.status)) {
+          sendJson(res, 409, { message: "Invalid status transition" });
+          return;
+        }
+      }
+      const order = updateOrder(param, body);
       sendJson(res, 200, order);
       return;
     }
 
     if (req.method === "POST" && param && url.pathname.endsWith("/pay")) {
       const body = await readJsonBody(req);
-      const provider = body.provider || "mock";
-      const payment = createPayment({ orderId: param, provider });
-      if (!payment) {
+      const order = getOrder(param);
+      if (!order) {
         sendJson(res, 404, { message: "Order not found" });
         return;
       }
+      if (order.status !== "pending_payment") {
+        sendJson(res, 409, { message: "Order cannot be paid in current status" });
+        return;
+      }
+      const provider = body.provider || "mock";
+      const payment = createPayment({ orderId: param, provider });
       sendJson(res, 201, {
         payment,
         nextAction:
@@ -184,11 +244,16 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "POST" && param && url.pathname.endsWith("/confirm")) {
-      const payment = recordPaymentSuccess(param);
-      if (!payment) {
+      const existing = getPayment(param);
+      if (!existing) {
         sendJson(res, 404, { message: "Payment not found" });
         return;
       }
+      if (existing.status === "succeeded") {
+        sendJson(res, 409, { message: "Payment already confirmed" });
+        return;
+      }
+      const payment = recordPaymentSuccess(param);
       sendJson(res, 200, { message: "Payment confirmed", payment });
       return;
     }
@@ -240,32 +305,46 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "POST" && param && url.pathname.endsWith("/submit")) {
       const body = await readJsonBody(req);
+      const current = getOrder(param);
+      if (!current) {
+        sendJson(res, 404, { message: "Order not found" });
+        return;
+      }
+      if (!canTransition(current.status, "submitted")) {
+        sendJson(res, 409, { message: "Order cannot be submitted" });
+        return;
+      }
       const order = updateOrder(param, {
         status: "submitted",
         deliveryUrl: body.deliveryUrl || ""
       });
-      if (!order) {
-        sendJson(res, 404, { message: "Order not found" });
-        return;
-      }
       sendJson(res, 200, order);
       return;
     }
 
     if (req.method === "POST" && param && url.pathname.endsWith("/complete")) {
-      const order = updateOrder(param, { status: "completed" });
-      if (!order) {
+      const current = getOrder(param);
+      if (!current) {
         sendJson(res, 404, { message: "Order not found" });
         return;
       }
+      if (!canTransition(current.status, "completed")) {
+        sendJson(res, 409, { message: "Order cannot be completed" });
+        return;
+      }
+      const order = updateOrder(param, { status: "completed" });
       sendJson(res, 200, order);
       return;
     }
 
     if (req.method === "POST" && param && url.pathname.endsWith("/refund")) {
-      const order = getOrder(param);
-      if (!order) {
+      const current = getOrder(param);
+      if (!current) {
         sendJson(res, 404, { message: "Order not found" });
+        return;
+      }
+      if (!canTransition(current.status, "refunded")) {
+        sendJson(res, 409, { message: "Order cannot be refunded" });
         return;
       }
       updateOrder(param, { status: "refunded" });
