@@ -12,6 +12,10 @@ const supportMessages = document.getElementById("support-messages");
 const supportInput = document.getElementById("support-input");
 const supportSend = document.getElementById("support-send");
 const supportClear = document.getElementById("support-clear");
+const orderPreviewPrice = document.getElementById("order-preview-price");
+const orderPreviewDetails = document.getElementById("order-preview-details");
+
+let pricingRules = null;
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, {
@@ -71,6 +75,7 @@ function formatCurrency(amount) {
 function renderPricing(pricing) {
   if (!pricing) return;
   const { rules } = pricing;
+  pricingRules = rules;
   pricingContainer.innerHTML = `
     <div class="card">
       <h3>基础价格</h3>
@@ -82,6 +87,25 @@ function renderPricing(pricing) {
       <p>加急：${rules.urgencyMultiplier.urgent}</p>
       <p>极速：${rules.urgencyMultiplier.express}</p>
     </div>
+  `;
+}
+
+function calculateAmount(pages, urgency) {
+  if (!pricingRules) return 0;
+  const multiplier = pricingRules.urgencyMultiplier[urgency] ?? 1;
+  return Math.round(pages * pricingRules.basePricePerPage * multiplier);
+}
+
+function updateOrderPreview() {
+  const pages = Number(document.getElementById("pages").value || 0);
+  const urgency = document.getElementById("urgency").value;
+  const amount = pages > 0 ? calculateAmount(pages, urgency) : 0;
+  orderPreviewPrice.textContent = formatCurrency(amount || 0);
+  const multiplier = pricingRules?.urgencyMultiplier?.[urgency] ?? 1;
+  orderPreviewDetails.innerHTML = `
+    <li>页数：${pages || 0} 页</li>
+    <li>紧急系数：${multiplier}</li>
+    <li>基础单价：${pricingRules ? formatCurrency(pricingRules.basePricePerPage) : "—"}</li>
   `;
 }
 
@@ -173,6 +197,7 @@ async function loadOrders() {
 async function loadPricing() {
   const pricing = await fetchJson(`${API_BASE}/pricing`);
   renderPricing(pricing);
+  updateOrderPreview();
 }
 
 orderForm.addEventListener("submit", async (event) => {
@@ -195,6 +220,7 @@ orderForm.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload)
     });
     orderForm.reset();
+    updateOrderPreview();
     await loadOrders();
   } catch (error) {
     setError(error.message);
@@ -235,6 +261,7 @@ ordersContainer.addEventListener("click", async (event) => {
 
 loadOrders();
 loadPricing();
+orderForm.addEventListener("input", updateOrderPreview);
 
 supportToggle.addEventListener("click", () => {
   supportPanel.classList.toggle("open");

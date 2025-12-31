@@ -33,6 +33,32 @@
         padding: 20px 24px;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
       }
+      .order-layout {
+        display: grid;
+        gap: 24px;
+      }
+      .order-preview {
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        padding: 16px;
+        display: grid;
+        gap: 12px;
+      }
+      .order-preview h3 {
+        margin: 0;
+      }
+      .order-preview .price {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e1b4b;
+      }
+      .order-preview ul {
+        margin: 0;
+        padding-left: 18px;
+        color: #475569;
+        font-size: 14px;
+      }
       .hero {
         display: flex;
         justify-content: space-between;
@@ -259,6 +285,10 @@
         .hero {
           align-items: flex-start;
         }
+        .order-layout {
+          grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+          align-items: start;
+        }
         .order-card {
           grid-template-columns: 2fr 1fr;
           align-items: start;
@@ -291,46 +321,54 @@
       </section>
       <section>
         <h2>创建订单</h2>
-        <form id="order-form">
-          <div class="grid">
-            <div>
-              <label for="title">订单标题</label>
-              <input id="title" name="title" placeholder="毕业论文写作" required />
+        <div class="order-layout">
+          <form id="order-form">
+            <div class="grid">
+              <div>
+                <label for="title">订单标题</label>
+                <input id="title" name="title" placeholder="毕业论文写作" required />
+              </div>
+              <div>
+                <label for="topic">论文主题</label>
+                <input id="topic" name="topic" placeholder="AI 在教育中的应用" required />
+              </div>
+              <div>
+                <label for="pages">页数</label>
+                <input id="pages" name="pages" type="number" min="1" value="10" required />
+              </div>
+              <div>
+                <label for="urgency">紧急程度</label>
+                <select id="urgency" name="urgency">
+                  <option value="normal">正常</option>
+                  <option value="urgent">加急</option>
+                  <option value="express">极速</option>
+                </select>
+              </div>
             </div>
             <div>
-              <label for="topic">论文主题</label>
-              <input id="topic" name="topic" placeholder="AI 在教育中的应用" required />
+              <label for="requirements">需求说明</label>
+              <textarea id="requirements" name="requirements" placeholder="引用格式、查重率要求等"></textarea>
             </div>
-            <div>
-              <label for="pages">页数</label>
-              <input id="pages" name="pages" type="number" min="1" value="10" required />
+            <div class="inline-row">
+              <div>
+                <label for="provider">支付方式</label>
+                <select id="provider" name="provider">
+                  <option value="mock">模拟支付</option>
+                  <option value="stripe">Stripe</option>
+                  <option value="alipay">支付宝</option>
+                  <option value="wechat">微信支付</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label for="urgency">紧急程度</label>
-              <select id="urgency" name="urgency">
-                <option value="normal">正常</option>
-                <option value="urgent">加急</option>
-                <option value="express">极速</option>
-              </select>
-            </div>
+            <button type="submit">提交订单</button>
+          </form>
+          <div class="order-preview" id="order-preview">
+            <h3>价格预估</h3>
+            <div class="price" id="order-preview-price">¥0</div>
+            <ul id="order-preview-details"></ul>
+            <p class="muted">价格会根据页数与紧急程度自动计算。</p>
           </div>
-          <div>
-            <label for="requirements">需求说明</label>
-            <textarea id="requirements" name="requirements" placeholder="引用格式、查重率要求等"></textarea>
-          </div>
-          <div class="inline-row">
-            <div>
-              <label for="provider">支付方式</label>
-              <select id="provider" name="provider">
-                <option value="mock">模拟支付</option>
-                <option value="stripe">Stripe</option>
-                <option value="alipay">支付宝</option>
-                <option value="wechat">微信支付</option>
-              </select>
-            </div>
-          </div>
-          <button type="submit">提交订单</button>
-        </form>
+        </div>
       </section>
 
       <section>
