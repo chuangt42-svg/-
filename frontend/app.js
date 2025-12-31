@@ -5,6 +5,7 @@ const ordersContainer = document.getElementById("orders");
 const pricingContainer = document.getElementById("pricing");
 const orderError = document.getElementById("order-error");
 const orderLoading = document.getElementById("order-loading");
+const summaryCards = document.getElementById("summary-cards");
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, {
@@ -41,6 +42,14 @@ const statusLabels = {
   refunded: "已退款"
 };
 
+const statusBadgeClass = {
+  pending_payment: "warning",
+  paid: "success",
+  submitted: "info",
+  completed: "success",
+  refunded: "warning"
+};
+
 function formatStatus(status) {
   return statusLabels[status] || status;
 }
@@ -62,6 +71,39 @@ function renderPricing(pricing) {
   `;
 }
 
+function renderSummary(orders, paymentsByOrder) {
+  const totalOrders = orders.length;
+  const totalRevenue = orders.reduce((sum, order) => sum + order.amount, 0);
+  const pending = orders.filter((order) => order.status === "pending_payment").length;
+  const paid = orders.filter((order) => order.status === "paid").length;
+  const latestPayment = Object.values(paymentsByOrder)
+    .flat()
+    .slice(-1)[0];
+
+  summaryCards.innerHTML = `
+    <div class="summary-card">
+      <h3>订单总数</h3>
+      <p>${totalOrders} 单</p>
+    </div>
+    <div class="summary-card">
+      <h3>累计金额</h3>
+      <p>¥${totalRevenue}</p>
+    </div>
+    <div class="summary-card">
+      <h3>待支付</h3>
+      <p>${pending} 单</p>
+    </div>
+    <div class="summary-card">
+      <h3>已支付</h3>
+      <p>${paid} 单</p>
+    </div>
+    <div class="summary-card">
+      <h3>最近支付</h3>
+      <p>${latestPayment ? `${latestPayment.provider} / ${latestPayment.status}` : "暂无"}</p>
+    </div>
+  `;
+}
+
 function renderOrders(orders, payments) {
   ordersContainer.innerHTML = "";
   if (!orders.length) {
@@ -75,18 +117,23 @@ function renderOrders(orders, payments) {
     const canSubmit = order.status === "paid";
     const canComplete = order.status === "submitted";
     const card = document.createElement("div");
-    card.className = "card";
+    card.className = "order-card";
     card.innerHTML = `
       <h3>${order.title}</h3>
-      <p class="muted">主题：${order.topic}</p>
-      <p>金额：¥${order.amount}（${order.pages}页，${order.urgency}）</p>
+      <div class="order-meta">
+        <span>主题：${order.topic}</span>
+        <span>金额：¥${order.amount}（${order.pages}页，${order.urgency}）</span>
+        <span>创建时间：${new Date(order.createdAt).toLocaleString()}</span>
+      </div>
       <div class="inline-row">
-        <span class="badge">状态：${formatStatus(order.status)}</span>
+        <span class="badge ${statusBadgeClass[order.status] || ""}">
+          状态：${formatStatus(order.status)}
+        </span>
         <span class="muted">
           最近支付：${latestPayment ? `${latestPayment.provider} / ${latestPayment.status}` : "暂无"}
         </span>
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+      <div class="actions">
         <button data-action="pay" data-id="${order.id}" data-provider="${latestPayment?.provider || "mock"}" ${canPay ? "" : "disabled"}>创建支付</button>
         <button class="secondary" data-action="submit" data-id="${order.id}" ${canSubmit ? "" : "disabled"}>提交稿件</button>
         <button class="secondary" data-action="complete" data-id="${order.id}" ${canComplete ? "" : "disabled"}>完成订单</button>
@@ -100,7 +147,10 @@ async function loadOrders() {
   setLoading(true);
   try {
     const response = await fetchJson(`${API_BASE}/orders?includePayments=true`);
-    renderOrders(response.orders, response.paymentsByOrder || {});
+    const orders = response.orders || [];
+    const paymentsByOrder = response.paymentsByOrder || {};
+    renderOrders(orders, paymentsByOrder);
+    renderSummary(orders, paymentsByOrder);
   } finally {
     setLoading(false);
   }

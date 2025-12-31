@@ -14,7 +14,10 @@
       header {
         background: linear-gradient(120deg, #4f46e5, #6366f1);
         color: white;
-        padding: 32px 40px;
+        padding: 36px 40px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
       }
       main {
         padding: 24px 40px 60px;
@@ -28,6 +31,38 @@
         border-radius: 12px;
         padding: 20px 24px;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      }
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
+      .hero p {
+        margin: 8px 0 0;
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .hero .meta {
+        display: inline-flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .hero .meta span {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+      }
+      .summary-cards {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+      .summary-card {
+        background: linear-gradient(135deg, #eef2ff, #f8fafc);
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid #e2e8f0;
       }
       form {
         display: grid;
@@ -99,18 +134,63 @@
         color: #3730a3;
         font-weight: 600;
       }
+      .badge.success {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .badge.warning {
+        background: #fef9c3;
+        color: #854d0e;
+      }
+      .badge.info {
+        background: #e0f2fe;
+        color: #075985;
+      }
       .inline-row {
         display: flex;
         gap: 12px;
         align-items: center;
         flex-wrap: wrap;
       }
+      .order-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 16px;
+        background: white;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+        display: grid;
+        gap: 12px;
+      }
+      .order-card h3 {
+        margin: 0;
+      }
+      .order-meta {
+        display: grid;
+        gap: 6px;
+        font-size: 14px;
+        color: #475569;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
     </style>
   </head>
   <body>
     <header>
-      <h1>论文订单系统 + 支付系统</h1>
-      <p>快速创建论文订单、生成支付、模拟支付回调。</p>
+      <div class="hero">
+        <div>
+          <h1>论文订单系统 + 支付系统</h1>
+          <p>快速创建论文订单、生成支付、模拟支付回调。</p>
+          <div class="meta">
+            <span>实时价格计算</span>
+            <span>多支付渠道</span>
+            <span>订单状态追踪</span>
+          </div>
+        </div>
+        <div class="summary-cards" id="summary-cards"></div>
+      </div>
     </header>
     <main>
       <section>
