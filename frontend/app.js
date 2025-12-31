@@ -6,6 +6,12 @@ const pricingContainer = document.getElementById("pricing");
 const orderError = document.getElementById("order-error");
 const orderLoading = document.getElementById("order-loading");
 const summaryCards = document.getElementById("summary-cards");
+const supportPanel = document.getElementById("support-panel");
+const supportToggle = document.getElementById("support-toggle");
+const supportMessages = document.getElementById("support-messages");
+const supportInput = document.getElementById("support-input");
+const supportSend = document.getElementById("support-send");
+const supportClear = document.getElementById("support-clear");
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, {
@@ -229,3 +235,21 @@ ordersContainer.addEventListener("click", async (event) => {
 
 loadOrders();
 loadPricing();
+
+supportToggle.addEventListener("click", () => {
+  supportPanel.classList.toggle("open");
+});
+
+supportSend.addEventListener("click", () => {
+  const message = supportInput.value.trim();
+  if (!message) return;
+  const bubble = document.createElement("span");
+  bubble.textContent = `你：${message}`;
+  supportMessages.appendChild(bubble);
+  supportInput.value = "";
+});
+
+supportClear.addEventListener("click", () => {
+  supportMessages.innerHTML =
+    "<span>您好～欢迎咨询论文订单与支付问题。</span>";
+});

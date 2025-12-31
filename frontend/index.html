@@ -187,6 +187,74 @@
         gap: 8px;
         flex-wrap: wrap;
       }
+      .support-widget {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+        z-index: 20;
+      }
+      .support-panel {
+        width: 280px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+        padding: 16px;
+        border: 1px solid #e2e8f0;
+        display: none;
+      }
+      .support-panel.open {
+        display: grid;
+        gap: 12px;
+      }
+      .support-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .support-header h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+      .support-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .support-button {
+        border-radius: 999px;
+        padding: 10px 16px;
+      }
+      .support-tag {
+        font-size: 12px;
+        background: #dcfce7;
+        color: #166534;
+        padding: 4px 10px;
+        border-radius: 999px;
+      }
+      .support-messages {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 12px;
+        display: grid;
+        gap: 8px;
+        font-size: 13px;
+      }
+      .support-messages span {
+        background: white;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+      }
+      .support-input {
+        display: grid;
+        gap: 8px;
+      }
+      .support-input input {
+        width: 100%;
+      }
       @media (min-width: 900px) {
         .hero {
           align-items: flex-start;
@@ -272,6 +340,26 @@
         <div id="orders" class="grid"></div>
       </section>
     </main>
+
+    <div class="support-widget">
+      <div class="support-panel" id="support-panel">
+        <div class="support-header">
+          <h3>在线客服</h3>
+          <span class="support-tag">在线</span>
+        </div>
+        <div class="support-messages" id="support-messages">
+          <span>您好～欢迎咨询论文订单与支付问题。</span>
+        </div>
+        <div class="support-input">
+          <input id="support-input" placeholder="输入您的问题…" />
+          <div class="support-actions">
+            <button class="secondary" id="support-send">发送</button>
+            <button class="secondary" id="support-clear">清空</button>
+          </div>
+        </div>
+      </div>
+      <button class="support-button" id="support-toggle">在线客服</button>
+    </div>
 
     <script src="./app.js"></script>
   </body>
