@@ -33,6 +33,24 @@
         padding: 20px 24px;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
       }
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .section-title span {
+        font-size: 13px;
+        color: #64748b;
+      }
+      .highlight {
+        background: #fef3c7;
+        color: #92400e;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 600;
+      }
       .order-layout {
         display: grid;
         gap: 24px;
@@ -75,6 +93,29 @@
         margin: 0;
         font-size: 14px;
         color: #475569;
+      }
+      .steps {
+        display: grid;
+        gap: 8px;
+        font-size: 13px;
+        color: #475569;
+      }
+      .steps li {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .steps span {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        color: #3730a3;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
       }
       .inline-help {
         font-size: 12px;
@@ -270,6 +311,18 @@
         gap: 8px;
         flex-wrap: wrap;
       }
+      .orders-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .orders-header input {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #cbd5f5;
+        min-width: 200px;
+      }
       .support-widget {
         position: fixed;
         right: 24px;
@@ -377,7 +430,10 @@
         <div id="pricing" class="grid"></div>
       </section>
       <section>
-        <h2>创建订单</h2>
+        <div class="section-title">
+          <h2>创建订单</h2>
+          <span class="highlight">平均 2-3 天交付</span>
+        </div>
         <div class="order-layout">
           <form id="order-form">
             <div class="form-section">
@@ -455,14 +511,26 @@
             <div class="price" id="order-preview-price">¥0</div>
             <ul id="order-preview-details"></ul>
             <p class="muted">价格会根据页数与紧急程度自动计算。</p>
+            <ul class="steps">
+              <li><span>1</span>提交订单需求</li>
+              <li><span>2</span>完成支付确认</li>
+              <li><span>3</span>写手开始撰写</li>
+              <li><span>4</span>交付与修改</li>
+            </ul>
           </div>
         </div>
       </section>
 
       <section>
-        <h2>订单列表</h2>
-        <div class="muted" id="order-error" style="display:none;"></div>
-        <div class="muted" id="order-loading" style="display:none;">加载中...</div>
+        <div class="section-title">
+          <h2>订单列表</h2>
+          <span>实时更新订单状态</span>
+        </div>
+        <div class="orders-header">
+          <input id="order-search" placeholder="搜索订单标题/主题" />
+          <span class="muted" id="order-error" style="display:none;"></span>
+          <span class="muted" id="order-loading" style="display:none;">加载中...</span>
+        </div>
         <div id="orders" class="grid"></div>
         <p class="muted">
           <a href="./login.html">客户登录</a> ·

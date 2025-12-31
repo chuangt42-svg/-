@@ -15,8 +15,11 @@ const supportClear = document.getElementById("support-clear");
 const orderPreviewPrice = document.getElementById("order-preview-price");
 const orderPreviewDetails = document.getElementById("order-preview-details");
 const urgencyOptions = document.getElementById("urgency-options");
+const orderSearch = document.getElementById("order-search");
 
 let pricingRules = null;
+let cachedOrders = [];
+let cachedPayments = {};
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, {
@@ -190,13 +193,25 @@ function renderOrders(orders, payments) {
   });
 }
 
+function applySearch(orders) {
+  const query = orderSearch.value.trim();
+  if (!query) return orders;
+  return orders.filter(
+    (order) =>
+      order.title.includes(query) || order.topic.includes(query)
+  );
+}
+
 async function loadOrders() {
   setLoading(true);
   try {
     const response = await fetchJson(`${API_BASE}/orders?includePayments=true`);
     const orders = response.orders || [];
     const paymentsByOrder = response.paymentsByOrder || {};
-    renderOrders(orders, paymentsByOrder);
+    cachedOrders = orders;
+    cachedPayments = paymentsByOrder;
+    const filtered = applySearch(orders);
+    renderOrders(filtered, paymentsByOrder);
     renderSummary(orders, paymentsByOrder);
   } finally {
     setLoading(false);
@@ -276,6 +291,9 @@ urgencyOptions.addEventListener("click", (event) => {
   const chip = event.target.closest(".urgency-chip");
   if (!chip) return;
   syncUrgencyUI(chip.dataset.value);
+});
+orderSearch.addEventListener("input", () => {
+  renderOrders(applySearch(cachedOrders), cachedPayments);
 });
 
 supportToggle.addEventListener("click", () => {
